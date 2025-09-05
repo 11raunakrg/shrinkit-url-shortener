@@ -14,11 +14,11 @@ import { LinkIcon, LogOut } from "lucide-react";
 
 const Header = () => {
   const navigate = useNavigate();
-  const isLoggedIn = true;
+  const isLoggedIn = false;
 
   return (
     <>
-      <nav className="p-4 flex justify-between items-center bg-blue-400">
+      <nav className="p-4 w-full flex justify-between items-center bg-blue-400">
         <Link to="/">
           <img src="/logo.png" alt="ShrinkIt logo" className="h-20 rounded" />
         </Link>
@@ -26,7 +26,7 @@ const Header = () => {
           {!isLoggedIn ? (
             <Button
               onClick={() => navigate("/auth")}
-              className="cursor-pointer"
+              className="bg-green-800 text-white border border-white cursor-pointer hover:bg-gray-700"
             >
               Login
             </Button>
