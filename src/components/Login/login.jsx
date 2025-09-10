@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   CardAction,
@@ -13,6 +13,10 @@ import { BeatLoader } from "react-spinners";
 import Error from "../error/error";
 import * as Yup from "yup";
 import { Button } from "../ui/button";
+import UseFetch from "@/hooks/use-fetch";
+import { login } from "@/db/apiAuth";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { UrlState } from "@/context/context";
 
 const Login = () => {
   const [error, setError] = useState({});
@@ -20,6 +24,9 @@ const Login = () => {
     email: "",
     password: "",
   });
+  const navigate = useNavigate();
+  let [searchParams] = useSearchParams();
+  const longLink = searchParams.get("createNew");
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -29,7 +36,26 @@ const Login = () => {
     }));
   };
 
+  const {
+    data: LoginData,
+    loading,
+    error: LoginError,
+    fn: fnLogin,
+  } = UseFetch(login, formData);
+
+  const { fetchUser } = UrlState();
+
+  useEffect(() => {
+    // console.log(LoginData);
+    if (error == null && data) {
+      navigate(`/dashboard?${longLink ? `createNew=${longLink}` : ""}`);
+    }
+    fetchUser();
+  }, [LoginData, LoginError]);
+
   const handleLogin = async () => {
+    console.log(formData);
+
     setError([]);
     try {
       const schema = Yup.object().shape({
@@ -43,12 +69,14 @@ const Login = () => {
       });
 
       await schema.validate(formData, { abortEarly: false });
-      // TODO: api call
-    } catch (error) {
+      await fnLogin();
+    } catch (err) {
       const newError = {};
-      error?.inner?.forEach((err) => {
-        newError[err.path] = err.message;
-      });
+      if (err.inner) {
+        err.inner.forEach((e) => {
+          newError[e.path] = e.message;
+        });
+      }
       setError(newError);
     }
   };
@@ -64,6 +92,7 @@ const Login = () => {
             Enter your email below to login to <br />
             your account
           </CardDescription>
+          {LoginError && <Error message={LoginError.message} />}
         </CardHeader>
         <CardContent className="space-y-2">
           <div className="space-y-1">
@@ -74,7 +103,7 @@ const Login = () => {
               placeholder="Enter your email..."
               onChange={handleInputChange}
             />
-            {error.email && <Error message={error.email} />}
+            {error?.email && <Error message={error.email} />}
           </div>
           <div className="space-y-1">
             <h3 className="font-semibold ml-2">Password</h3>
@@ -84,7 +113,7 @@ const Login = () => {
               placeholder="Enter your password..."
               onChange={handleInputChange}
             />
-            {error.password && <Error message={error.password} />}
+            {error?.password && <Error message={error.password} />}
           </div>
         </CardContent>
         <CardFooter>
@@ -92,7 +121,7 @@ const Login = () => {
             className="bg-red-600 text-white cursor-pointer"
             onClick={handleLogin}
           >
-            {false ? <BeatLoader size={10} color="#36d7b7" /> : "Login"}
+            {loading ? <BeatLoader size={10} color="#36d7b7" /> : "Login"}
           </Button>
         </CardFooter>
       </Card>
