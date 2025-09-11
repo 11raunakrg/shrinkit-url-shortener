@@ -46,23 +46,19 @@ const Login = () => {
   const { fetchUser } = UrlState();
 
   useEffect(() => {
-    // console.log(LoginData);
-    if (error == null && data) {
+    if (!LoginError && LoginData) {
       navigate(`/dashboard?${longLink ? `createNew=${longLink}` : ""}`);
+      fetchUser(); // user ko reload karna after login
     }
-    fetchUser();
   }, [LoginData, LoginError]);
 
   const handleLogin = async () => {
-    console.log(formData);
-
-    setError([]);
+    setError({});
     try {
       const schema = Yup.object().shape({
         email: Yup.string()
           .email("Invalid Email")
           .required("Email is required"),
-
         password: Yup.string()
           .min(6, "Password must be minimum of 6 characters")
           .required("Password is required"),
@@ -80,7 +76,6 @@ const Login = () => {
       setError(newError);
     }
   };
-
   return (
     <div>
       <Card>

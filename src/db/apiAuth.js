@@ -14,14 +14,13 @@ export async function login({ email, password }) {
 }
 
 export async function getCurrentUser() {
-  const { data: session, error } = await supabase.auth.getSession();
+  const {
+    data: { session },
+    error,
+  } = await supabase.auth.getSession();
 
-  if (!session.session) {
-    return null;
-  }
   if (error) throw new Error(error.message);
-
-  return session.session.data;
+  return session?.user || null;
 }
 
 export async function signUp({ name, email, password, profilePicture }) {
@@ -48,4 +47,9 @@ export async function signUp({ name, email, password, profilePicture }) {
   if (error) throw new Error(error.message);
 
   return data;
+}
+
+export async function logOut() {
+  const { error } = await supabase.auth.signOut();
+  if (error) throw new Error(error.message);
 }

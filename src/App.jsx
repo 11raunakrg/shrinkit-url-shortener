@@ -44,7 +44,7 @@ const router = createBrowserRouter([
 const App = () => {
   return (
     <>
-      <div>
+      <div className="p-10">
         <UrlProvider>
           <RouterProvider router={router} />;
         </UrlProvider>
