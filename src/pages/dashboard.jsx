@@ -9,6 +9,7 @@ import UseFetch from "@/hooks/use-fetch";
 import { getUrls } from "@/db/apiUrls";
 import { getClicksForUrls } from "@/db/apiClicks";
 import LinkCard from "@/components/Link-Card/link-card";
+import CreateLink from "@/components/create-link/create-link";
 
 const DashBoard = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -38,7 +39,7 @@ const DashBoard = () => {
     if (urls?.length) fnClicks();
   }, [urls?.length]);
 
-  const filteredUrlsData = urls?.Filter((url) =>
+  const filteredUrlsData = urls?.filter((url) =>
     url.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -66,9 +67,7 @@ const DashBoard = () => {
       </div>
       <div className="flex justify-between">
         <h1 className="text-4xl font-extrabold">My Links</h1>
-        <Button className="text-md font-bold cursor-pointer">
-          Create Link
-        </Button>
+        <CreateLink />
       </div>
       <div className="relative">
         <Input
